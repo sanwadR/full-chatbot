@@ -1,14 +1,148 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LangChain Chatbot with Groq API</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+# 🤖 LangGraph Chatbot with Groq API
+
+> A fully functional chatbot built with **LangGraph** that uses **Groq API** and maintains full conversation context/memory.
+
+---
+
+## ✨ Features
+
+| Feature                       | Description                                            |
+| ----------------------------- | ------------------------------------------------------ |
+| 🧠 **Context Memory**         | Remembers entire conversation history across sessions  |
+| 🔄 **Model Flexibility**      | Easily switch between different Groq models on the fly |
+| 🏗️ **LangGraph Architecture** | Modern, scalable architecture using state graphs       |
+| ⌨️ **Interactive Commands**   | Clear history, view history, change models dynamically |
+
+---
+
+## 🚀 Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/sanwadR/full-chatbot.git
+cd full-chatbot
+```
+
+### 2. Create a Virtual Environment
+
+```bash
+python -m venv venv
+venv\Scripts\activate      # Windows
+source venv/bin/activate   # macOS/Linux
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure API Key
+
+Edit the `.env` file and add your Groq API key:
+
+```env
+GROQ_API_KEY=your_actual_groq_api_key_here
+```
+
+> 📌 Get your free Groq API key from: [https://console.groq.com/](https://console.groq.com/)
+
+### 5. Run the Chatbot
+
+```bash
+python chatbot.py
+```
+
+---
+
+## 📊 Available Models
+
+```
+llama3-8b-8192          (default)
+llama3-70b-8192
+llama-3.3-70b-versatile
+mixtral-8x7b-32768
+gemma-7b-it
+gemma2-9b-it
+```
+
+---
+
+## ⌨️ Commands
+
+| Command         | Description                                     |
+| --------------- | ----------------------------------------------- |
+| `/clear`        | Clear conversation history                      |
+| `/history`      | Show conversation history                       |
+| `/model <name>` | Switch model (e.g. `/model mixtral-8x7b-32768`) |
+| `/quit`         | Exit the chatbot                                |
+
+---
+
+## 💬 Example Usage
+
+```
+You: Hello! What's your name?
+Bot: Hello! I'm an AI assistant powered by LangGraph...
+
+You: What's 25 + 17?
+Bot: 25 + 17 equals 42.
+
+You: What was the math problem I just asked?
+Bot: You asked me to calculate 25 + 17...
+
+You: /model mixtral-8x7b-32768
+Model changed to: mixtral-8x7b-32768
+
+You: /quit
+👋 Goodbye!
+```
+
+---
+
+## 📁 Project Structure
+
+```
+full-chatbot/
+├── chatbot.py        # Main chatbot implementation
+├── .env              # Environment variables (API keys)
+├── requirements.txt  # Python dependencies
+└── README.md         # This file
+```
+
+---
+
+## 🔧 How It Works
+
+The chatbot uses the following components:
+
+1. **LangGraph** — Framework for building state-based LLM applications
+2. **ChatGroq** — Groq API integration for fast LLM inference
+3. **MemorySaver** — LangGraph's built-in checkpointer for conversation memory
+4. **StateGraph** — Manages the chatbot's processing flow
+
+> 💡 The architecture allows you to switch models or even LLM providers with minimal code changes!
+
+---
+
+## 📦 Requirements
+
+```
+langchain-groq
+langchain-core
+langgraph
+python-dotenv
+typing-extensions
+```
+
+---
+
+<div align="center">
+
+Built with ❤️ using **LangGraph** and **Groq API**
+
+</div>
       }
 
       body {
@@ -190,6 +324,7 @@
         text-decoration: underline;
       }
     </style>
+
   </head>
   <body>
     <div class="container">
@@ -281,6 +416,7 @@
 
       <h2>💬 Example Usage</h2>
       <pre><code>You: Hello! What's your name?
+
 Bot: Hello! I'm an AI assistant powered by LangGraph...
 
 You: What's 25 + 17?
@@ -338,5 +474,6 @@ You: /quit
         </p>
       </div>
     </div>
+
   </body>
 </html>
