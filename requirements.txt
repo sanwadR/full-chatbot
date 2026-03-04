@@ -3,3 +3,4 @@ langchain-core
 langgraph
 python-dotenv
 typing-extensions
+requests
