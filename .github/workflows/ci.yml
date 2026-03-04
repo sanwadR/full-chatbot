@@ -1,0 +1,43 @@
+name: CI - Build & Lint Check
+
+# When should this run?
+on:
+  push:
+    # branches: ["**"]        # Run on push to ANY branch
+    branches: [main] # Run on push to main
+  pull_request:
+    branches: [main] # Run when a PR targets main
+
+jobs:
+  build:
+    name: Install & Check
+    runs-on: ubuntu-latest # GitHub provides this free Linux machine
+
+    steps:
+      # Step 1: Download your code onto the GitHub machine
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Step 3: Install your dependencies from requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Step 4: Check for syntax errors in your Python files
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          # --exit-zero means it will WARN but NOT fail the build
+          flake8 toolcall.py chatbot.py --max-line-length=120 --exit-zero
+
+      # Step 5: Check that Python files are importable (basic build check)
+      - name: Verify files are valid Python
+        run: |
+          python -m py_compile toolcall.py
+          python -m py_compile chatbot.py
+          echo "✅ All files compiled successfully!"
