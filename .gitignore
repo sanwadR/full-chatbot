@@ -1,6 +1,7 @@
 # Environment variables
 .env
-
+#chinlit dependencies 
+.chainlit
 # Python
 __pycache__/
 *.py[cod]
