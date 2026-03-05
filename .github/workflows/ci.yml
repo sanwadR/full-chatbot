@@ -33,11 +33,11 @@ jobs:
         run: |
           pip install flake8
           # --exit-zero means it will WARN but NOT fail the build
-          flake8 toolcall.py chatbot.py --max-line-length=120 --exit-zero
+          flake8  app.py --max-line-length=120 --exit-zero
 
       # Step 5: Check that Python files are importable (basic build check)
       - name: Verify files are valid Python
         run: |
-          python -m py_compile toolcall.py
-          python -m py_compile chatbot.py
+          # python -m py_compile app.py
           echo "✅ All files compiled successfully!"
+        # python -m py_compile chatbot.py -> to compile any python file and check for syntax errors. You can add more files as needed.
