@@ -1,6 +1,7 @@
 import os
 import chainlit as cl
 from dotenv import load_dotenv
+from langchain_mcp_adapters.client import MultiServerMCPClient
 from main import ChatbotWithMemory
 
 # ==============================
@@ -10,26 +11,40 @@ load_dotenv()
 
 
 # ==============================
+# MCP Configuration
+# ==============================
+MCP_CONFIG = {
+    "weather": {
+        "command": "python",
+        "args": ["mcp_server.py"],
+        "transport": "stdio",
+    }
+}
+
+
+# ==============================
 # On Chat Start - runs when user opens the app
 # ==============================
 @cl.on_chat_start
 async def on_chat_start():
-    # Create a new chatbot instance for this user session
-    chatbot = ChatbotWithMemory()
+    # Start MCP client — spawns mcp_server.py as a subprocess
+    client = MultiServerMCPClient(MCP_CONFIG)
 
-    # Store chatbot in user session so it persists
+    # Discover tools from the MCP server
+    tools = await client.get_tools()
+
+    # Inject tools into the chatbot
+    chatbot = ChatbotWithMemory(tools=tools)
     cl.user_session.set("chatbot", chatbot)
 
     # Welcome message
     await cl.Message(
         content=(
-            "👋 **Welcome to the AI Chatbot!**\n\n"
-            "I can help you with:\n"
+            "👋 **Welcome to the AI Chatbot (MCP-powered)!**\n\n"
+            f"Tools loaded via MCP: `{[t.name for t in tools]}`\n\n"
             "- 🌤️ **Weather** — Ask me weather of any city!\n"
             "- 💬 **General Questions** — Ask me anything!\n\n"
-            "**Commands:**\n"
-            "- `/clear` — Clear conversation memory\n"
-            "- `/model <name>` — Change AI model\n"
+            "**Commands:** `/clear` | `/model <name>`"
         )
     ).send()
 
@@ -41,7 +56,6 @@ async def on_chat_start():
 async def on_message(message: cl.Message):
     # Get the chatbot from user session
     chatbot: ChatbotWithMemory = cl.user_session.get("chatbot")
-
     user_input = message.content.strip()
 
     # ==============================
@@ -49,17 +63,16 @@ async def on_message(message: cl.Message):
     # ==============================
     if user_input.lower() == "/clear":
         chatbot.clear_memory()
-        await cl.Message(content="🗑️ **Memory cleared!** Starting fresh conversation.").send()
+        await cl.Message(content="🗑️ Memory cleared!").send()
         return
 
     elif user_input.lower().startswith("/model"):
         parts = user_input.split()
         if len(parts) > 1:
-            model_name = parts[1]
-            chatbot.change_model(model_name)
-            await cl.Message(content=f"🤖 **Model changed to:** `{model_name}`").send()
+            chatbot.change_model(parts[1])
+            await cl.Message(content=f"🤖 Model changed to: `{parts[1]}`").send()
         else:
-            await cl.Message(content="⚠️ **Usage:** `/model <model_name>`\n\nExample: `/model llama-3.3-70b-versatile`").send()
+            await cl.Message(content="⚠️ Usage: `/model <model_name>`").send()
         return
 
     # ==============================
@@ -67,10 +80,7 @@ async def on_message(message: cl.Message):
     # ==============================
     async with cl.Step(name="Thinking...") as step:
         step.input = user_input
-
-        # Get response from chatbot
-        response = chatbot.chat(user_input)
-
+        response = await chatbot.chat(user_input)
         step.output = response
 
     # ==============================

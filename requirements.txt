@@ -5,3 +5,5 @@ python-dotenv
 typing-extensions
 requests
 chainlit
+mcp
+langchain-mcp-adapters
