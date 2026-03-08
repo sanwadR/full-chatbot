@@ -1,4 +1,5 @@
 import os
+import sys
 import chainlit as cl
 from dotenv import load_dotenv
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -7,7 +8,8 @@ from main import ChatbotWithMemory
 # ==============================
 # Load environment variables
 # ==============================
-load_dotenv()
+_HERE = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(_HERE, ".env"))
 
 
 # ==============================
@@ -15,8 +17,8 @@ load_dotenv()
 # ==============================
 MCP_CONFIG = {
     "weather": {
-        "command": "python",
-        "args": ["mcp_server.py"],
+        "command": sys.executable,
+        "args": [os.path.join(_HERE, "mcp_server.py")],
         "transport": "stdio",
     }
 }
@@ -42,7 +44,11 @@ async def on_chat_start():
         content=(
             "👋 **Welcome to the AI Chatbot (MCP-powered)!**\n\n"
             f"Tools loaded via MCP: `{[t.name for t in tools]}`\n\n"
-            "- 🌤️ **Weather** — Ask me weather of any city!\n"
+            "- 🌤️ **Current Weather** — *What's the weather in Tokyo?*\n"
+            "- 🕐 **Hourly Forecast** — *Give me the hourly forecast for London for the next 12 hours.*\n"
+            "- 📅 **Daily Forecast** — *What's the 7-day forecast for New York?*\n"
+            "- 🌫️ **Air Quality** — *What is the AQI in Delhi?*\n"
+            "- 📍 **Geocoding** — *Where are the coordinates of Paris?*\n"
             "- 💬 **General Questions** — Ask me anything!\n\n"
             "**Commands:** `/clear` | `/model <name>`"
         )
