@@ -13,6 +13,7 @@ load_dotenv(os.path.join(_HERE, ".env"))
 
 mcp = FastMCP("weather-server")
 
+#ADDED THE API KEY IN HUGGINGFACE 
 OWM_KEY = os.getenv("OPENWEATHERMAP_API_KEY", "").strip()
 OWM_BASE = "https://api.openweathermap.org"
 
