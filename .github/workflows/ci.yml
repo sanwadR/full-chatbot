@@ -9,7 +9,6 @@ on:
       - "mcp_server.py"
       - "requirements.txt"
       - "Dockerfile"
-      - "chainlit.md"
   pull_request:
     branches: [main] # ← runs validate when PR targets main
     paths:
@@ -76,7 +75,6 @@ jobs:
           cp mcp_server.py hf-space/
           cp requirements.txt hf-space/
           cp Dockerfile hf-space/
-          cp chainlit.md hf-space/
 
           cd hf-space
           git add .
