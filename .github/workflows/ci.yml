@@ -3,7 +3,15 @@ name: Deploy to Hugging Face Spaces
 on:
   push:
     branches: [main]
-    # Only trigger when these files change (the ones HF Space needs)
+    paths:
+      - "app.py"
+      - "main.py"
+      - "mcp_server.py"
+      - "requirements.txt"
+      - "Dockerfile"
+      - "chainlit.md"
+  pull_request:
+    branches: [main] # ← runs validate when PR targets main
     paths:
       - "app.py"
       - "main.py"
@@ -13,7 +21,7 @@ on:
       - "chainlit.md"
 
 jobs:
-  # Job 1: Lint & Validate (gate check — if this fails, no deploy)
+  # Job 1: Lint & Validate — runs on BOTH pull_request AND push to main
   validate:
     name: Lint & Validate
     runs-on: ubuntu-latest
@@ -41,11 +49,12 @@ jobs:
           python -m py_compile mcp_server.py
           echo "✅ All files compiled successfully!"
 
-  # Job 2: Deploy to HF Spaces (only runs if validate succeeds)
+  # Job 2: Deploy — runs ONLY when merged/pushed to main (not on PRs)
   deploy:
     name: Deploy to HF Spaces
     runs-on: ubuntu-latest
     needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' # ← key condition
 
     steps:
       - name: Checkout code
@@ -55,17 +64,13 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Install huggingface_hub CLI
           pip install huggingface_hub
 
-          # Configure git identity
           git config --global user.email "ci-bot@github.com"
           git config --global user.name "GitHub Actions"
 
-          # Clone the HF Space repo using token
           git clone https://user:$HF_TOKEN@huggingface.co/spaces/Sanwad/my-chatbot hf-space
 
-          # Copy only the required files into the cloned HF repo
           cp app.py hf-space/
           cp main.py hf-space/
           cp mcp_server.py hf-space/
@@ -73,7 +78,6 @@ jobs:
           cp Dockerfile hf-space/
           cp chainlit.md hf-space/
 
-          # Commit and push to HF Spaces
           cd hf-space
           git add .
           git diff --cached --quiet || git commit -m "Deploy from GitHub Actions - ${{ github.sha }}"
