@@ -1,5 +1,6 @@
 I have now read every single file in the repository. Here is the complete, enterprise-grade technical documentation for the `sanwadR/full-chatbot` project.
 
+
 ---
 
 # 📄 Technical Documentation — `full-chatbot`
